@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>ctx.request.body、ctx.request.query和ctx.params的区别</title>
+    <url>/2024/05/15/blog2405152030/</url>
+    <content><![CDATA[<p>在Node.js的Web框架中，如<code>Koa</code>或<code>Express</code>，<code>ctx.request.body</code>、<code>ctx.request.query</code>和<code>ctx.params</code>分别代表了从HTTP请求中获取不同部分数据的方式。下面详细解释它们之间的区别：</p>
+<ol>
+<li><p><code>ctx.request.body</code>:通常用于存储HTTP请求的主体（Body）中的数据。当客户端通过<code>POST、PUT、PATCH</code>等方法发送表单数据、JSON数据或其他类型的数据时，这些数据会被解析后放置在这里。例如，提交表单或者发送JSON请求时，可以从<code>ctx.request.body</code>中获取数据。这需要相应的中间件（如<code>koa-bodyparser</code>或<code>Express</code>的<code>body-parser</code>）来解析请求体。</p>
+</li>
+<li><p><code>ctx.request.query</code>:包含了URL查询字符串中的参数。查询字符串是URL中?后面的部分，用于传递非敏感的、简单的键值对数据。例如，在URL <code>http://example.com/search?q=nodejs</code> 中，<code>ctx.request.query</code>将会是一个对象<code>&#123; q: &#39;nodejs&#39; &#125;</code>。这些参数通常用于过滤、排序或搜索等功能。</p>
+</li>
+</ol>
+<p>3.<code> ctx.params</code>:当使用动态路由（如:id、:username等）时，<code>ctx.params</code>用于存储URL中动态部分的值。例如，如果你的路由定义为<code>/users/:username</code>，并且访问<code>/users/john</code>，那么<code>ctx.params</code>将会是<code>&#123; username: &#39;john&#39; &#125;</code>。这些参数非常适合用于根据URL路径段来识别资源。</p>
+<p>总结：<code>ctx.request.body</code>主要用于获取请求主体中的数据，<code>ctx.request.query</code>用于获取URL查询字符串中的参数，而<code>ctx.params</code>则用于获取路由中动态匹配的参数。</p>
+<hr>
+<p>原文链接：<a href="https://blog.csdn.net/m0_56635723/article/details/138567128">CSDN</a></p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git项目过大，拉取代码失败</title>
     <url>/2024/05/15/blog01/</url>
     <content><![CDATA[<p>在拉取git项目过大时，遇到下面错误：</p>
@@ -147,25 +169,58 @@ Switched to a new branch &#39;fixSso&#39;
 ]]></content>
   </entry>
   <entry>
-    <title>ctx.request.body、ctx.request.query和ctx.params的区别</title>
-    <url>/2024/05/15/blog2405152030/</url>
-    <content><![CDATA[<p>在Node.js的Web框架中，如<code>Koa</code>或<code>Express</code>，<code>ctx.request.body</code>、<code>ctx.request.query</code>和<code>ctx.params</code>分别代表了从HTTP请求中获取不同部分数据的方式。下面详细解释它们之间的区别：</p>
-<ol>
-<li><p><code>ctx.request.body</code>:通常用于存储HTTP请求的主体（Body）中的数据。当客户端通过<code>POST、PUT、PATCH</code>等方法发送表单数据、JSON数据或其他类型的数据时，这些数据会被解析后放置在这里。例如，提交表单或者发送JSON请求时，可以从<code>ctx.request.body</code>中获取数据。这需要相应的中间件（如<code>koa-bodyparser</code>或<code>Express</code>的<code>body-parser</code>）来解析请求体。</p>
-</li>
-<li><p><code>ctx.request.query</code>:包含了URL查询字符串中的参数。查询字符串是URL中?后面的部分，用于传递非敏感的、简单的键值对数据。例如，在URL <code>http://example.com/search?q=nodejs</code> 中，<code>ctx.request.query</code>将会是一个对象<code>&#123; q: &#39;nodejs&#39; &#125;</code>。这些参数通常用于过滤、排序或搜索等功能。</p>
-</li>
-</ol>
-<p>3.<code> ctx.params</code>:当使用动态路由（如:id、:username等）时，<code>ctx.params</code>用于存储URL中动态部分的值。例如，如果你的路由定义为<code>/users/:username</code>，并且访问<code>/users/john</code>，那么<code>ctx.params</code>将会是<code>&#123; username: &#39;john&#39; &#125;</code>。这些参数非常适合用于根据URL路径段来识别资源。</p>
-<p>总结：<code>ctx.request.body</code>主要用于获取请求主体中的数据，<code>ctx.request.query</code>用于获取URL查询字符串中的参数，而<code>ctx.params</code>则用于获取路由中动态匹配的参数。</p>
+    <title>使用el-table的sortable时遇到的问题</title>
+    <url>/2024/05/15/blog2405152103/</url>
+    <content><![CDATA[<p>在<code>Element UI</code>的<code>el-table</code>组件中，使用<code>sortable</code>属性进行排序时，字符串进行排序是没有问题的，对日期进行排序时遇到了实际显示的排序与预期不符的情况。</p>
+<p>原因分析：数据格式问题，<code>el-table</code>默认按照字符串的方式进行排序，如果列的数据类型是字符串，但实际按数值或日期进行排序，可能会出现排序错乱。</p>
+<p>解决办法：自定义<code>sort-method</code>方法。</p>
+<p>代码示例：</p>
+<pre><code>// 原本代码
+&lt;el-table-column
+ 
+   prop=&quot;reportArchiveTime&quot;
+ 
+   label=&quot;归档时间&quot;
+ 
+   align=&quot;center&quot;
+ 
+   min-width=&quot;150&quot;
+ 
+   sortable
+&gt;
+ 
+   &lt;template slot-scope=&quot;scope&quot;&gt;
+ 
+      &#123;&#123; formatTime(scope.row.progress.reportArchive.completedTime) &#125;&#125;
+ 
+   &lt;/template&gt;
+&lt;/el-table-column&gt;
+// formatTime函数改变了时间的表示方式（例如，将其格式化为易读的日期字符串），那么在进行排序时，Element UI可能会根据原始未格式化的日期进行排序，而不是基于格式化后的日期
+// 修改后代码
+&lt;el-table-column
+   prop=&quot;reportArchiveTime&quot;
+   label=&quot;归档时间&quot;
+   align=&quot;center&quot;
+   min-width=&quot;150&quot;
+   sortable
+   :sort-method=&quot;(a, b) =&gt; &#123;
+     const dateA = new Date(a.progress.reportArchive.completedTime);
+     const dateB = new Date(b.progress.reportArchive.completedTime);
+     return dateA.getTime() - dateB.getTime();
+   &#125;&quot;&gt;
+   &lt;template slot-scope=&quot;scope&quot;&gt;
+      &#123;&#123; formatTime(scope.row.progress.reportArchive.completedTime) &#125;&#125;
+   &lt;/template&gt;
+&lt;/el-table-column&gt;
+</code></pre>
 <hr>
-<p>原文链接：<a href="https://blog.csdn.net/m0_56635723/article/details/138567128">CSDN</a></p>
+<p>原文链接：<a href="https://blog.csdn.net/m0_56635723/article/details/138666610">CSDN</a></p>
 ]]></content>
       <categories>
-        <category>学习笔记</category>
+        <category>踩坑笔记</category>
       </categories>
       <tags>
-        <tag>学习</tag>
+        <tag>前端</tag>
       </tags>
   </entry>
 </search>
