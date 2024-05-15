@@ -1,6 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>git项目过大，拉取代码失败</title>
+    <url>/2024/05/15/blog01/</url>
+    <content><![CDATA[<p>在拉取git项目过大时，遇到下面错误：</p>
+<pre><code>D:\Work&gt;git clone &lt;git-url&gt;
+Cloning into &#39;demo&#39;...
+remote: Enumerating objects: 197190, done.
+remote: Counting objects: 100% (584/584), done.
+remote: Compressing objects: 100% (538/538), done.
+error: 32593 bytes of body are still expectedGiB | 11.68 MiB/s
+fetch-pack: unexpected disconnect while reading sideband packet
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output
+</code></pre>
+<h2 id="方法一：从使用HTTPS克隆换成使用-SSH-克隆。"><a href="#方法一：从使用HTTPS克隆换成使用-SSH-克隆。" class="headerlink" title="方法一：从使用HTTPS克隆换成使用 SSH 克隆。"></a>方法一：从使用HTTPS克隆换成使用 SSH 克隆。</h2><h2 id="方法二：使用浅克隆"><a href="#方法二：使用浅克隆" class="headerlink" title="方法二：使用浅克隆"></a>方法二：使用浅克隆</h2><p>1.<br>depth&#x3D;1：表示只克隆最近一次提交的历史记录，不包含其他提交记录</p>
+<pre><code class="bash">$  git clone --depth=1 &lt;git@gitlab.com/xxx.git&gt; xxxx
+</code></pre>
+<p>2. </p>
+<pre><code class="bash">$  git remote set-branches origin * // 用于设置远程仓库的分支，将远程仓库的所有分支都设置为本地仓库的跟踪分支
+$ git config --get remote.origin.fetch // 用于获取远程仓库的默认抓取行为配置
+$ git fetch --depth=1 origin test // 用于从远程仓库的test分支上抓取最新的提交记录，但只抓取最近一次提交的历史记录，不包含其他提交记录。
+</code></pre>
+<p>3. </p>
+<pre><code class="bash">$  git checkout -b test origin/test // 用于创建一个新的分支并切换到该分支
+</code></pre>
+<p>运行示例：</p>
+<pre><code>D:\&gt;git clone --depth=1 &lt;git-url&gt;
+Cloning into &#39;demo&#39;...
+remote: Enumerating objects: 4004, done.
+remote: Counting objects: 100% (4004/4004), done.
+remote: Compressing objects: 100% (3112/3112), done.
+remote: Total 4004 (delta 939), reused 2719 (delta 422), pack-reused 0
+Receiving objects: 100% (4004/4004), 58.68 MiB | 6.10 MiB/s, done.
+Resolving deltas: 100% (939/939), done.
+Updating files: 100% (3953/3953), done.
+ 
+D:\&gt;cd demo
+ 
+D:\demo&gt;git branch -r
+  origin/HEAD -&gt; origin/master
+  origin/master
+ 
+D:\demo&gt;git remote set-branches origin *
+ 
+D:\demo&gt;git config --get remote.origin.fetch
++refs/heads/*:refs/remotes/origin/*
+ 
+D:\demo&gt;git fetch --depth=1 origin fixSso
+remote: Enumerating objects: 320, done.
+remote: Counting objects: 100% (320/320), done.
+remote: Compressing objects: 100% (151/151), done.
+remote: Total 174 (delta 119), reused 54 (delta 14), pack-reused 0
+Receiving objects: 100% (174/174), 11.45 MiB | 2.96 MiB/s, done.
+Resolving deltas: 100% (119/119), completed with 114 local objects.
+From &lt;git-url&gt;
+ * branch            fixSso     -&gt; FETCH_HEAD
+ * [new branch]      fixSso     -&gt; origin/fixSso
+D:\demo&gt;git branch -r
+  origin/HEAD -&gt; origin/master
+  origin/fixSso
+  origin/master
+ 
+D:\demo&gt;git checkout -b fixSso origin/fixSso
+branch &#39;fixSso&#39; set up to track &#39;origin/fixSso&#39;.
+Switched to a new branch &#39;fixSso&#39;
+</code></pre>
+<h2 id="方法三：当你使用-–depth-标志克隆项目时，Git-会默认使用-–single-branch-标志。可以使用-–no-single-branch-标志告诉-Git-从每个分支拉取指定深度的历史记录。"><a href="#方法三：当你使用-–depth-标志克隆项目时，Git-会默认使用-–single-branch-标志。可以使用-–no-single-branch-标志告诉-Git-从每个分支拉取指定深度的历史记录。" class="headerlink" title="方法三：当你使用 –depth 标志克隆项目时，Git 会默认使用 –single-branch 标志。可以使用 –no-single-branch 标志告诉 Git 从每个分支拉取指定深度的历史记录。"></a>方法三：当你使用 –depth 标志克隆项目时，Git 会默认使用 –single-branch 标志。可以使用 –no-single-branch 标志告诉 Git 从每个分支拉取指定深度的历史记录。</h2><p>1. </p>
+<pre><code class="bash">$  git clone --depth=1 --no-single-branch &lt;git-url&gt; xxx
+</code></pre>
+<p>运行示例：</p>
+<pre><code>D:\&gt;git clone --depth=1 --no-single-branch &lt;git-url&gt; demo
+Cloning into &#39;demo&#39;...
+remote: Enumerating objects: 49971, done.
+remote: Counting objects: 100% (49971/49971), done.
+remote: Compressing objects: 100% (25808/25808), done.
+remote: Total 49971 (delta 33043), reused 35321 (delta 20462), pack-reused 0
+Receiving objects: 100% (49971/49971), 1.61 GiB | 5.25 MiB/s, done.
+Resolving deltas: 100% (33043/33043), done.
+Updating files: 100% (3953/3953), done.
+ 
+D:\&gt;cd demo
+ 
+D:\demo&gt;git branch -r
+  origin/1013_branch
+  origin/1273bugFix
+  origin/20221014
+  origin/20221017
+  origin/2023.7.10.mch
+  origin/20230208
+  origin/20230213
+  origin/20230309
+  origin/20230310
+  origin/20230313
+  origin/20230320
+  origin/20230321
+  origin/20230323
+  origin/20230403_Camellia
+  origin/20230410_camellia
+  origin/20230412_camellia
+  origin/20230418_FIXBUG
+  origin/20230508_camelia
+  origin/20230518_camelia
+  origin/20230612_camelia
+  origin/20230721_camelia
+  origin/20230726_camelia
+</code></pre>
+<p>2. </p>
+<pre><code class="bash">$  git config --get remote.origin.fetch
+</code></pre>
+<p>3. </p>
+<pre><code class="bash">$  git checkout -b test origin/test
+</code></pre>
+<p>运行示例：</p>
+<pre><code>D:\Work\demo&gt;git config --get remote.origin.fetch
++refs/heads/*:refs/remotes/origin/*
+ 
+D:\Work\demo&gt;git checkout -b fixSso origin/fixSso
+branch &#39;fixSso&#39; set up to track &#39;origin/fixSso&#39;.
+Switched to a new branch &#39;fixSso&#39;
+</code></pre>
+]]></content>
+      <categories>
+        <category>踩坑笔记</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2024/05/13/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -17,5 +145,27 @@
 </code></pre>
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>ctx.request.body、ctx.request.query和ctx.params的区别</title>
+    <url>/2024/05/15/blog2405152030/</url>
+    <content><![CDATA[<p>在Node.js的Web框架中，如<code>Koa</code>或<code>Express</code>，<code>ctx.request.body</code>、<code>ctx.request.query</code>和<code>ctx.params</code>分别代表了从HTTP请求中获取不同部分数据的方式。下面详细解释它们之间的区别：</p>
+<ol>
+<li><p><code>ctx.request.body</code>:通常用于存储HTTP请求的主体（Body）中的数据。当客户端通过<code>POST、PUT、PATCH</code>等方法发送表单数据、JSON数据或其他类型的数据时，这些数据会被解析后放置在这里。例如，提交表单或者发送JSON请求时，可以从<code>ctx.request.body</code>中获取数据。这需要相应的中间件（如<code>koa-bodyparser</code>或<code>Express</code>的<code>body-parser</code>）来解析请求体。</p>
+</li>
+<li><p><code>ctx.request.query</code>:包含了URL查询字符串中的参数。查询字符串是URL中?后面的部分，用于传递非敏感的、简单的键值对数据。例如，在URL <code>http://example.com/search?q=nodejs</code> 中，<code>ctx.request.query</code>将会是一个对象<code>&#123; q: &#39;nodejs&#39; &#125;</code>。这些参数通常用于过滤、排序或搜索等功能。</p>
+</li>
+</ol>
+<p>3.<code> ctx.params</code>:当使用动态路由（如:id、:username等）时，<code>ctx.params</code>用于存储URL中动态部分的值。例如，如果你的路由定义为<code>/users/:username</code>，并且访问<code>/users/john</code>，那么<code>ctx.params</code>将会是<code>&#123; username: &#39;john&#39; &#125;</code>。这些参数非常适合用于根据URL路径段来识别资源。</p>
+<p>总结：<code>ctx.request.body</code>主要用于获取请求主体中的数据，<code>ctx.request.query</code>用于获取URL查询字符串中的参数，而<code>ctx.params</code>则用于获取路由中动态匹配的参数。</p>
+<hr>
+<p>原文链接：<a href="https://blog.csdn.net/m0_56635723/article/details/138567128">CSDN</a></p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+      </tags>
   </entry>
 </search>
